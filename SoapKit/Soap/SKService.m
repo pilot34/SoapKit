@@ -49,6 +49,7 @@
 }
 
 - (NSArray *)parseOutput:(NSData *)response SoapReaquest:(SKRequest *)soapRequest {
+    
     DLog(@"response: %@", [[NSString alloc] initWithData:response encoding:NSUTF8StringEncoding]);
     GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:response options:0 error:nil];
     if(!doc)
@@ -59,14 +60,24 @@
     
     NSString *query = [NSString stringWithFormat:@"/soap:Envelope/soap:Body/service:%@Response/*", soapRequest.operation];
     NSArray *nodes = [doc nodesForXPath:query namespaces:namespaces error:nil];
-    if(!nodes || nodes.count < 1)
-        return nil;
+    if (nodes.count > 0) {
+        
+        NSMutableArray *output = [[NSMutableArray alloc] initWithCapacity:nodes.count];
+        for(GDataXMLElement *node in nodes)
+            [output addObject:[SKData dataWithXMLElement:[node copy]]];
+        
+        return output;
+    }
     
-    NSMutableArray *output = [[NSMutableArray alloc] initWithCapacity:nodes.count];
-    for(GDataXMLElement *node in nodes)
-        [output addObject:[SKData dataWithXMLElement:[node copy]]];
+    NSString *faultQuery = @"/soap:Envelope/soap:Body/soap:Fault/faultstring";
+    NSError *error;
+    nodes = [doc nodesForXPath:faultQuery namespaces:namespaces error:&error];
     
-    return output;
+    if (nodes.count > 0) {
+        return @[ [SKData dataWithXMLElement:[nodes.firstObject copy]] ];
+    }
+    
+    return nil;
 }
 
 @end
