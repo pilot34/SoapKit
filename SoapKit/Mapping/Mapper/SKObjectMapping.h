@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SKValueConverter.h"
+#import "Mapping/Converter/SKValueConverter.h"
 
 @interface SKObjectMapping : NSObject
 

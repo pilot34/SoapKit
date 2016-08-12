@@ -23,12 +23,12 @@
 - (instancetype)initWithName:(NSString *)name;
 
 - (void)addChild:(SKData *)child;
-- (void)addChildren:(NSArray *)children;
+- (void)addChildren:(NSArray<SKData *> *)children;
 
-- (NSArray *)children;
+- (NSArray<SKData *> *)children;
 - (SKData *)childByName:(NSString *)name;
-- (NSArray *)childrenByName:(NSString *)name;
-- (NSArray *)descendantsByName:(NSString *)name;
+- (NSArray<SKData *> *)childrenByName:(NSString *)name;
+- (NSArray<SKData *> *)descendantsByName:(NSString *)name;
 
 @property (strong, nonatomic) NSString *stringValue;
 @property (nonatomic)         NSInteger intValue;

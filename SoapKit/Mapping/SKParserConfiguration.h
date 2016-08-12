@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Mapping/Mapper/SKArrayMapping.h"
 
 @class SKArrayMapping, SKPropertyAggregator, SKObjectMapping, SKCustomInitialize, SKCustomParser;
 @interface SKParserConfiguration : NSObject

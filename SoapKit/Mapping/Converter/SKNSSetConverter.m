@@ -33,7 +33,7 @@
     return self;
 }
 
-- (id)transformValue:(id)values forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
+- (id)transformValue:(SKData *)values forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
     NSArray *result = [self.arrayConverter transformValue:values forDynamicAttribute:attribute data:data parentObject:parentObject];
     return [NSSet setWithArray:result];
 }

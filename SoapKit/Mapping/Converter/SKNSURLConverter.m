@@ -15,7 +15,8 @@
     return [[self alloc] init];
 }
 
-- (id)transformValue:(id)value forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
+- (id)transformValue:(SKData *)val forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
+    NSString *value = val.stringValue;
     return [NSURL URLWithString:[value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
 }
 - (id)serializeValue:(id)value forDynamicAttribute:(SKDynamicAttribute *)attribute {

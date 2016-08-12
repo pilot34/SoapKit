@@ -91,25 +91,12 @@
         return;
     }
     
-    // TODO
-    // dictionary = [SKDictionaryRearranger rearrangedata:data forConfiguration:self.configuration];
-    
     for (SKData *dataItem in data.children) {
         SKDynamicAttribute *dynamicAttribute = [self.propertyFinder findAttributeForKey:dataItem.name onClass:self.classToGenerate];
-        if(dynamicAttribute){
-            [self parseValue:dataItem.stringValue forObject:object inAttribute:dynamicAttribute data:data];
+        if (dynamicAttribute) {
+            [self parseValue:dataItem forObject:object inAttribute:dynamicAttribute data:data];
         }
-
     }
-    
-    
-    /*for (NSString *key in keys) {
-     id value = [dictionary valueForKey:key];
-     SKDynamicAttribute *dynamicAttribute = [self.propertyFinder findAttributeForKey:key onClass:self.classToGenerate];
-     if(dynamicAttribute){
-     [self parseValue:value forObject:object inAttribute:dynamicAttribute data:data];
-     }
-     }*/
 }
 
 

@@ -10,7 +10,7 @@
 #define Pods_SoapKitMapping_h
 
 #import "SKDataObjectMapping.h"
-#import "SKObjectMapping.h"
+#import "Mapper/SKObjectMapping.h"
 #import "SKParserConfiguration.h"
 
 #endif

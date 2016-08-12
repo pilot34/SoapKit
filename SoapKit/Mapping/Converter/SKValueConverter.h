@@ -8,14 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
-#import "SKData.h"
+#import "Soap/SKData.h"
 
 @class SKDynamicAttribute, SKParserConfiguration;
 
 @protocol SKValueConverter <NSObject>
 
 @required
-- (id)transformValue:(id)value forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject;
+- (id)transformValue:(SKData *)value forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject;
 - (id)serializeValue:(id)value forDynamicAttribute:(SKDynamicAttribute *)attribute;
 - (BOOL)canTransformValueForClass:(Class)cls;
 

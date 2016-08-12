@@ -7,7 +7,6 @@
 //
 
 #import "SKParserConfiguration.h"
-#import "SKArrayMapping.h"
 #import "SKPropertyAggregator.h"
 #import "SKCustomInitialize.h"
 
@@ -90,7 +89,7 @@
     return [[classOfObjectToGenerate alloc] init];
 }
 
-- (SKArrayMapping *) arrayMapperForMapper: (SKObjectMapping *) mapper {
+- (SKArrayMapping *)arrayMapperForMapper: (SKObjectMapping *) mapper {
     for(SKArrayMapping *arrayMapper in self.arrayMappers){
         SKObjectMapping *mapping = arrayMapper.objectMapping;
         BOOL sameKey = [mapping.keyReference isEqualToString:mapper.keyReference];
@@ -104,6 +103,6 @@
 }
 
 - (NSString *)addUnderScoreToPropertyName:(NSString *)key {
-    return (!key || [key isEqualToString:@""]) ? [NSString stringWithFormat:@"_%@", key] : @"";
+    return (key.length == 0) ? @"" : [NSString stringWithFormat:@"_%@", key];
 }
 @end

@@ -11,4 +11,6 @@
 
 @interface SKSimpleConverter : NSObject <SKValueConverter>
 
++ (instancetype)simpleConverter;
+
 @end

@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol SKConvertableObject
+
+@end
+
 @class SKParserConfiguration, SKData;
 
 @interface SKDataObjectMapping : NSObject

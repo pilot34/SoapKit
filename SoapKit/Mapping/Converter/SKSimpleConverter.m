@@ -11,7 +11,12 @@
 
 @implementation SKSimpleConverter
 
-- (id)transformValue:(id)value forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
++ (instancetype)simpleConverter {
+    return [[self alloc] init];
+}
+
+- (id)transformValue:(SKData *)val forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
+    NSString *value = val.stringValue;
     return value;
 }
 

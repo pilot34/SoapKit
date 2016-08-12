@@ -30,7 +30,8 @@
     return self;
 }
 
-- (id)transformValue:(id)value forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
+- (id)transformValue:(SKData *)val forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
+    NSString *value = val.stringValue;
     BOOL validDouble = [self validDouble:[NSString stringWithFormat:@"%@", value]];
     if(validDouble){
         return [NSDate dateWithTimeIntervalSince1970:[value doubleValue]];

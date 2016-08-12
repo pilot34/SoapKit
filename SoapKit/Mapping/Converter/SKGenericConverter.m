@@ -12,8 +12,10 @@
 #import "SKSimpleConverter.h"
 #import "SKNSArrayConverter.h"
 #import "SKNSSetConverter.h"
+#import "SKPrimitiveConverter.h"
 #import "SKCustomParser.h"
 #import "SKDataObjectMapping.h"
+#import "SKConvertableObjectConverter.h"
 
 @interface SKGenericConverter()
 @property(nonatomic, strong) SKParserConfiguration *configuration;
@@ -28,35 +30,23 @@
     self = [super init];
     if (self) {
         _configuration = configuration;
-        _parsers = [NSArray arrayWithObjects:
+        _parsers = @[
                    [SKNSDateConverter dateConverterForPattern:self.configuration.datePattern],
                    [SKNSURLConverter urlConverter],
                    [SKNSArrayConverter arrayConverterForConfiguration: self.configuration], 
-                   [SKNSSetConverter setConverterForConfiguration: self.configuration], nil];
+                   [SKNSSetConverter setConverterForConfiguration: self.configuration],
+                   [SKConvertableObjectConverter objectConverterForConfiguration:self.configuration],
+                   [SKPrimitiveConverter primitiveConverter],
+                   [SKSimpleConverter simpleConverter]
+                   ];
     }
     return self;
 }
 
-- (id)transformValue:(id)value forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
-    if([attribute isValidObject]){
-        BOOL valueIsKindOfSKData = [value isKindOfClass:[SKData class]];
-        BOOL attributeNotKindOfSKData = ![attribute.objectMapping.classReference isSubclassOfClass:[SKData class]];
-        if (valueIsKindOfSKData && attributeNotKindOfSKData) {
-            id parsedValue = [self parseValueForBlock:value forObjectMapping:attribute data:data parentObject:parentObject];
-            if (parsedValue) {
-                return parsedValue;
-            }
-
-            SKDataObjectMapping *parser = [SKDataObjectMapping mapperForClass:attribute.objectMapping.classReference
-                                                                     andConfiguration:self.configuration];
-            value = [parser parseData:(SKData *)value forParentObject:parentObject];
-        }else {
-            id parsedValue = [self parseSimpleValue:value forDynamicAttribute:attribute data:data parentObject:parentObject];
-            if (parsedValue) return parsedValue;
-        }
-    }
-    SKSimpleConverter *simpleParser = [[SKSimpleConverter alloc] init];
-    return [simpleParser transformValue:value forDynamicAttribute:attribute data:data parentObject:parentObject];
+- (id)transformValue:(SKData *)valueData forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
+    
+    id parsedValue = [self parseSimpleValue:valueData forDynamicAttribute:attribute data:data parentObject:parentObject];
+    return parsedValue;
 }
 
 - (id)serializeValue:(id)value forDynamicAttribute: (SKDynamicAttribute *) attribute {
@@ -72,17 +62,17 @@
 
 #pragma mark - private methods
 
-- (id)parseSimpleValue:(id)value forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
+- (id)parseSimpleValue:(SKData *)value forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
     id parsedValue = [self parseValueForBlock:value forObjectMapping:attribute data:data parentObject:parentObject];
     
-    if(parsedValue){
+    if (parsedValue) {
         return parsedValue;
     }
     
     return [self parseValueForParsers:value forDynamicAttribute:attribute data:data parentObject:parentObject];
 }
 
-- (id)parseValueForParsers:(id)value forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
+- (id)parseValueForParsers:(SKData *)value forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
     for (id<SKValueConverter> parser in self.parsers) {
         if([parser canTransformValueForClass:attribute.objectMapping.classReference]){
             return [parser transformValue:value forDynamicAttribute:attribute data:data parentObject:parentObject];

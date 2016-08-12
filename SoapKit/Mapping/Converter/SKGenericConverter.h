@@ -14,6 +14,6 @@
 @interface SKGenericConverter : NSObject
 - (id)initWithConfiguration:(SKParserConfiguration *) configuration;
 
-- (id)transformValue:(id)value forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject;
+- (id)transformValue:(SKData *)valueData forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject;
 - (id)serializeValue:(id)value forDynamicAttribute: (SKDynamicAttribute *) attribute;
 @end

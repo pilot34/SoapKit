@@ -19,7 +19,6 @@
 @end
 
 @implementation SKNSArrayConverter
-@synthesize configuration = _configuration;
 
 + (SKNSArrayConverter *) arrayConverterForConfiguration: (SKParserConfiguration *)configuration {
     return [[self alloc] initWithConfiguration: configuration];
@@ -33,21 +32,20 @@
     return self;   
 }
 
-- (id)transformValue:(id)values forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
-    if (!values || values == [NSNull null] || [values count] == 0) {
+- (id)transformValue:(SKData *)value forDynamicAttribute:(SKDynamicAttribute *)attribute data:(SKData *)data parentObject:(id)parentObject {
+
+    NSArray<SKData *> *allChildren = [data childrenByName:value.name];
+    if (![allChildren.firstObject.stringValue isEqualToString:value.stringValue]) {
+        // parse whole array only for the first item
         return nil;
     }
     
-    BOOL primitiveArray = ![[[values objectAtIndex:0] class] isSubclassOfClass:[NSDictionary class]];
-    if (primitiveArray) {
-        return [self parsePrimitiveValues:values data:data parentObject:parentObject];
-    } else {
-        SKArrayMapping *mapper = [self.configuration arrayMapperForMapper:attribute.objectMapping];
-        if (mapper) {
-            SKDataObjectMapping *parser = [SKDataObjectMapping mapperForClass:mapper.classForElementsOnArray andConfiguration:self.configuration];
-            return [parser parseArray:values forParentObject:parentObject];
-        }
+    SKArrayMapping *mapper = [self.configuration arrayMapperForMapper:attribute.objectMapping];
+    if (mapper) {
+        SKDataObjectMapping *parser = [SKDataObjectMapping mapperForClass:mapper.classForElementsOnArray andConfiguration:self.configuration];
+        return [parser parseArray:allChildren forParentObject:parentObject];
     }
+    
     return nil;
 }
 - (id)serializeValue:(id)values forDynamicAttribute:(SKDynamicAttribute *)attribute {
@@ -57,16 +55,6 @@
         SKDynamicAttribute *valueClassAsAttribute = [[SKDynamicAttribute alloc] initWithClass:[value class]];
         [valuesHolder addObject:[genericConverter serializeValue:value forDynamicAttribute:valueClassAsAttribute]];
     }    
-    return [NSArray arrayWithArray:valuesHolder];
-}
-
-- (NSArray *)parsePrimitiveValues:(NSArray *)primitiveValues data:(SKData *)data parentObject:(id)parentObject {
-    SKSimpleConverter *simpleParser = [[SKSimpleConverter alloc] init];
-    NSMutableArray *valuesHolder = [NSMutableArray array];
-    for (id value in primitiveValues) {
-        SKDynamicAttribute *valueClassAsAttribute = [[SKDynamicAttribute alloc] initWithClass:[value class]];
-        [valuesHolder addObject:[simpleParser transformValue:value forDynamicAttribute:valueClassAsAttribute data:data parentObject:parentObject]];
-    }
     return [NSArray arrayWithArray:valuesHolder];
 }
 
