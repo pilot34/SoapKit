@@ -14,7 +14,7 @@
 
 #define kSoapEnvelopeNamespace @"http://schemas.xmlsoap.org/soap/envelope/"
 
-@interface SKService ()
+@interface SKService()<NSURLSessionDelegate>
 @property (strong, nonatomic, readwrite) NSURLSession *session;
 @end
 
@@ -23,7 +23,7 @@
 - (NSURLSession *)session {
     if(!_session) {
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-        _session = [NSURLSession sessionWithConfiguration:config delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
+        _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:[NSOperationQueue mainQueue]];
     }
     
     return _session;
@@ -78,6 +78,24 @@
     }
     
     return nil;
+}
+
+#pragma mark - NSURLSessionDelegate
+
+- (void)URLSession:(NSURLSession *)session
+didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
+ completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
+    
+    if (challenge.previousFailureCount > 5) {
+        completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+        return;
+    }
+    
+    NSURLCredential *c = [[NSURLCredential alloc] initWithUser:self.username
+                                                      password:self.password
+                                                   persistence:NSURLCredentialPersistenceForSession];
+    
+    completionHandler(NSURLSessionAuthChallengeUseCredential, c);
 }
 
 @end

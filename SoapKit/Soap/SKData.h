@@ -35,6 +35,8 @@
 @property (nonatomic)         BOOL boolValue;
 @property (strong, nonatomic) NSDate *dateValue;
 
+- (void)addNamespace:(NSString *)value;
+
 - (NSString *)name;
 - (NSArray *)attributes;
 - (NSString *)description;

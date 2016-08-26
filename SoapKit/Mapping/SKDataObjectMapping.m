@@ -65,9 +65,21 @@
         return nil;
     }
     NSMutableArray *values = [[NSMutableArray alloc] initWithCapacity:[array count]];
-    for (id data in array) {
-        id value = [self parseData:data forParentObject:parentObject];
-        [values addObject:value];
+    BOOL convertableObject = [self.classToGenerate conformsToProtocol:@protocol(SKConvertableObject)];
+    
+    for (SKData *data in array) {
+        id value = nil;
+        if (convertableObject) {
+            value = [self parseData:data forParentObject:parentObject];
+            
+        } else {
+            SKDynamicAttribute *attr = [[SKDynamicAttribute alloc] initWithClass:self.classToGenerate];
+            value = [self.converter transformValue:data forDynamicAttribute:attr data:data parentObject:parentObject];
+        }
+        
+        if (value) {
+            [values addObject:value];
+        }
     }
     return [NSArray arrayWithArray:values];
 }

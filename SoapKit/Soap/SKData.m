@@ -144,6 +144,17 @@
     self.xml.stringValue = value;
 }
 
+- (void)addNamespace:(NSString *)value {
+    for (GDataXMLNode *node in self.xml.namespaces) {
+        if ([node.name isEqualToString:@""] && [node.stringValue isEqualToString:value]) {
+            return;
+        }
+    }
+    
+    GDataXMLNode *node = [GDataXMLNode namespaceWithName:@"" stringValue:value];
+    [self.xml addNamespace:node];
+}
+
 //TODO: what about invalid values?
 - (BOOL)boolValue {
     return [self.xml.stringValue caseInsensitiveCompare:@"true"] == NSOrderedSame;
@@ -162,7 +173,7 @@
 
 - (void)setIntValue:(NSInteger)value
 {
-    [self setStringValue:[NSString stringWithFormat:@"%@\n", @(value)]];
+    [self setStringValue:[NSString stringWithFormat:@"%@", @(value)]];
 }
 
 - (NSDate *)dateValue

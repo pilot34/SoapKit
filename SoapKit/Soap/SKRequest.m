@@ -39,6 +39,8 @@
                       operation:(NSString *)operation
                 andNamespaceURL:(NSURL *)namespaceURL
 {
+    NSParameterAssert(!request || [request isKindOfClass:NSMutableURLRequest.class]);
+    
     self = [super init];
     if (self) {
         self.namespaceURL = namespaceURL;
@@ -48,7 +50,7 @@
         self.xml = [GDataXMLElement elementWithName:operation];
         [self.xml addNamespace:[GDataXMLElement namespaceWithName:nil stringValue:[namespaceURL absoluteString]]];
         
-        self.request = (NSMutableURLRequest *)request ;//? (NSMutableURLRequest *)request:[self buildHTTPRequest:url];
+        self.request = (NSMutableURLRequest *)request;
     }
     return self;
 }
@@ -94,6 +96,7 @@
         _request = [self buildHTTPRequest:_url];
     else
         [_request setHTTPBody:self.body];
+    
     return _request;
 }
 
