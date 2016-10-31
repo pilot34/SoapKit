@@ -64,6 +64,17 @@
     return arg;
 }
 
++ (instancetype)dataWithName:(NSString *)name andAttributes:(NSDictionary<NSString *, NSString *> *)attributes {
+    SKData *arg = [SKData dataWithName:name];
+    for (NSString *key in attributes) {
+        GDataXMLNode *node = [GDataXMLNode attributeWithName:key
+                                                 stringValue:attributes[key]];
+        [arg.xml addAttribute:node];
+    }
+    
+    return arg;
+}
+
 + (instancetype)dataWithXMLElement:(GDataXMLElement *)element
 {
     SKData *arg;

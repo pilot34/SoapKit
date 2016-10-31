@@ -18,6 +18,9 @@
 @property (strong, nonatomic) NSURL *namespaceURL;
 @property (strong, nonatomic) NSString *operation;
 
+@property (strong, nonatomic) NSString *username;
+@property (strong, nonatomic) NSString *password;
+
 - (instancetype)initWithURL:(NSURL *)url
                   operation:(NSString *)operation
             andNamespaceURL:(NSURL *)namespaceURL;

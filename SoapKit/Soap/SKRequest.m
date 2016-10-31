@@ -12,6 +12,7 @@
 #import "SKData+Private.h"
 
 #define kSoapEnvelopeNamespace @"http://schemas.xmlsoap.org/soap/envelope/"
+#define kSoapEnvelopeNamespaceNSI @"http://www.w3.org/2001/XMLSchema-instance"
 
 @interface SKRequest ()
 @property (strong, nonatomic) GDataXMLElement *xml;
@@ -81,6 +82,7 @@
 {
     GDataXMLElement *envelope = [GDataXMLElement elementWithName:@"Envelope"];
     [envelope addNamespace:[GDataXMLElement namespaceWithName:nil stringValue:kSoapEnvelopeNamespace]];
+    [envelope addNamespace:[GDataXMLElement namespaceWithName:@"xsi" stringValue:kSoapEnvelopeNamespaceNSI]];
     
     GDataXMLElement *body = [GDataXMLElement elementWithName:@"Body"];
     [body addChild:self.xml];
@@ -110,6 +112,14 @@
     [request setHTTPBody:self.body];
     [request setValue:self.soapAction forHTTPHeaderField:@"SOAPAction"];
     [request setValue:@"text/xml; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+    
+    if (self.username && self.password) {
+        NSString *usernamePassword = [NSString stringWithFormat:@"%@:%@", self.username, self.password];
+        NSString *base64 = [[usernamePassword dataUsingEncoding:NSUTF8StringEncoding] base64EncodedStringWithOptions:0];
+        NSString *auth = [NSString stringWithFormat:@"Basic %@", base64];
+        [request setValue:auth
+       forHTTPHeaderField:@"Authorization"];
+    }
     
     return request;
 }

@@ -30,6 +30,9 @@
 }
 
 - (void)performRequest:(SKRequest *)soapRequest onSuccess:(void (^)(SKService *soapService, SKData *data))success onFailure:(void (^)(SKService *soapService, NSError *error))failure {
+    soapRequest.username = self.username;
+    soapRequest.password = self.password;
+    
     NSURLSessionDataTask *task = [self.session dataTaskWithRequest:soapRequest.request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if(error) {
             failure(self, error);
@@ -82,20 +85,20 @@
 
 #pragma mark - NSURLSessionDelegate
 
-- (void)URLSession:(NSURLSession *)session
-didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
- completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
-    
-    if (challenge.previousFailureCount > 5) {
-        completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
-        return;
-    }
-    
-    NSURLCredential *c = [[NSURLCredential alloc] initWithUser:self.username
-                                                      password:self.password
-                                                   persistence:NSURLCredentialPersistenceForSession];
-    
-    completionHandler(NSURLSessionAuthChallengeUseCredential, c);
-}
+ - (void)URLSession:(NSURLSession *)session
+ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
+  completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable)) completionHandler {
+
+     if (challenge.previousFailureCount > 5) {
+         completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+         return;
+     }
+
+     NSURLCredential *c = [[NSURLCredential alloc] initWithUser:self.username
+                                                       password:self.password
+                                                    persistence:NSURLCredentialPersistenceForSession];
+
+     completionHandler(NSURLSessionAuthChallengeUseCredential, c);
+ }
 
 @end

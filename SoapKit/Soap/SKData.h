@@ -19,6 +19,7 @@
 + (instancetype)dataWithName:(NSString *)name andDateValue:(NSDate *)value;
 + (instancetype)dataWithName:(NSString *)name andChild:(SKData *)child;
 + (instancetype)dataWithName:(NSString *)name andChildren:(NSArray *)children;
++ (instancetype)dataWithName:(NSString *)name andAttributes:(NSDictionary<NSString *, NSString *> *)attributes;
 
 - (instancetype)initWithName:(NSString *)name;
 
