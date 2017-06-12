@@ -13,6 +13,8 @@
 
 @interface SKService : NSObject
 
+@property (nonatomic) NSTimeInterval timeoutIntervalForRequest;
+
 @property (strong, nonatomic, readonly) NSURLSession *session;
 @property (strong, nonatomic, readonly) NSURL *url;
 @property (strong, nonatomic, readonly) NSURL *namespaceURL;

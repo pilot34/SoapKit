@@ -23,6 +23,9 @@
 - (NSURLSession *)session {
     if(!_session) {
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        if (self.timeoutIntervalForRequest > 0) {
+            config.timeoutIntervalForRequest = self.timeoutIntervalForRequest;
+        }
         _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:[NSOperationQueue mainQueue]];
     }
     
