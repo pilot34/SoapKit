@@ -45,6 +45,8 @@
         SKDataObjectMapping *parser = [SKDataObjectMapping mapperForClass:mapper.classForElementsOnArray andConfiguration:self.configuration];
         return [parser parseArray:allChildren forParentObject:parentObject];
     }
+
+    return nil;
 }
 - (id)serializeValue:(id)values forDynamicAttribute:(SKDynamicAttribute *)attribute {
     SKGenericConverter* genericConverter = [[SKGenericConverter alloc] initWithConfiguration:self.configuration];
