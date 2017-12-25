@@ -41,6 +41,13 @@
             failure(self, error);
             return;
         }
+
+        NSHTTPURLResponse *httpResponse = [response isKindOfClass:NSHTTPURLResponse.class] ? (id)response : nil;
+        if(httpResponse && httpResponse.statusCode != 200) {
+            failure(self, [NSError errorWithDomain:NSURLErrorDomain code:httpResponse.statusCode userInfo:nil]);
+            return;
+        }
+
         NSArray *result = [self parseOutput:data SoapReaquest:soapRequest];
         if(!result) {
             failure(self, [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCannotParseResponse userInfo:nil]);
