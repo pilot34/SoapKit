@@ -28,14 +28,14 @@
         }
         _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:[NSOperationQueue mainQueue]];
     }
-    
+
     return _session;
 }
 
-- (void)performRequest:(SKRequest *)soapRequest onSuccess:(void (^)(SKService *soapService, SKData *data))success onFailure:(void (^)(SKService *soapService, NSError *error))failure {
+- (NSURLSessionTask *)performRequest:(SKRequest *)soapRequest onSuccess:(void (^)(SKService *soapService, SKData *data))success onFailure:(void (^)(SKService *soapService, NSError *error))failure {
     soapRequest.username = self.username;
     soapRequest.password = self.password;
-    
+
     NSURLSessionDataTask *task = [self.session dataTaskWithRequest:soapRequest.request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if(error) {
             failure(self, error);
@@ -59,56 +59,58 @@
         }
     }];
     [task resume];
+    return task;
 }
 
 - (NSArray *)parseOutput:(NSData *)response SoapReaquest:(SKRequest *)soapRequest {
-    
+
     DLog(@"response: %@", [[NSString alloc] initWithData:response encoding:NSUTF8StringEncoding]);
     GDataXMLDocument *doc = [[GDataXMLDocument alloc] initWithData:response options:0 error:nil];
     if(!doc)
         return nil;
-    
+
     NSDictionary *namespaces = @{@"soap":kSoapEnvelopeNamespace,
                                  @"service":[soapRequest.namespaceURL absoluteString]};
-    
+
     NSString *query = [NSString stringWithFormat:@"/soap:Envelope/soap:Body/service:%@Response/*", soapRequest.operation];
     NSArray *nodes = [doc nodesForXPath:query namespaces:namespaces error:nil];
     if (nodes.count > 0) {
-        
+
         NSMutableArray *output = [[NSMutableArray alloc] initWithCapacity:nodes.count];
         for(GDataXMLElement *node in nodes)
             [output addObject:[SKData dataWithXMLElement:[node copy]]];
-        
+
         return output;
     }
-    
+
     NSString *faultQuery = @"/soap:Envelope/soap:Body/soap:Fault/faultstring";
     NSError *error;
     nodes = [doc nodesForXPath:faultQuery namespaces:namespaces error:&error];
-    
+
     if (nodes.count > 0) {
         return @[ [SKData dataWithXMLElement:[nodes.firstObject copy]] ];
     }
-    
+
     return nil;
 }
 
 #pragma mark - NSURLSessionDelegate
 
- - (void)URLSession:(NSURLSession *)session
- didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
-  completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable)) completionHandler {
+- (void)URLSession:(NSURLSession *)session
+didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
+ completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable)) completionHandler {
 
-     if (challenge.previousFailureCount > 5) {
-         completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
-         return;
-     }
+    if (challenge.previousFailureCount > 5) {
+        completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+        return;
+    }
 
-     NSURLCredential *c = [[NSURLCredential alloc] initWithUser:self.username
-                                                       password:self.password
-                                                    persistence:NSURLCredentialPersistenceForSession];
+    NSURLCredential *c = [[NSURLCredential alloc] initWithUser:self.username
+                                                      password:self.password
+                                                   persistence:NSURLCredentialPersistenceForSession];
 
-     completionHandler(NSURLSessionAuthChallengeUseCredential, c);
- }
+    completionHandler(NSURLSessionAuthChallengeUseCredential, c);
+}
 
 @end
+
