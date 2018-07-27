@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 	s.name					= 'SoapKit'
-	s.version				= '0.0.3'
+	s.version				= '0.0.4'
 	s.summary				= 'SoapKit is a framework to simplify the consumption of SOAP services'
 	s.homepage				= 'https://github.com/hons82/SoapKit'
 	s.license				= { :type => 'MIT', :file => 'LICENSE.md' }
