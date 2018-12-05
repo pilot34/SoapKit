@@ -15,38 +15,35 @@
 #define kSoapEnvelopeNamespace @"http://schemas.xmlsoap.org/soap/envelope/"
 
 @interface SKService()<NSURLSessionDelegate>
-+@property (strong, nonatomic, readwrite) NSOperationQueue *backgroundQueue;
+@property (strong, nonatomic, readwrite) NSOperationQueue *backgroundQueue;
 @property (strong, nonatomic, readwrite) NSURLSession *session;
 @end
 
 @implementation SKService
 
-- (NSURLSession *)session {
-    if(!_session) {
-        NSURLSessionConfiguration *config = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-        if (self.timeoutIntervalForRequest > 0) {
-            config.timeoutIntervalForRequest = self.timeoutIntervalForRequest;
+    - (NSURLSession *)session {
+        if(!_session) {
+            NSURLSessionConfiguration *config = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+            if (self.timeoutIntervalForRequest > 0) {
+                config.timeoutIntervalForRequest = self.timeoutIntervalForRequest;
+            }
+            _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:self.backgroundQueue];
         }
-        -        _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:[NSOperationQueue mainQueue]];
-        +
-        +        _session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:self.backgroundQueue];
+
+        return _session;
     }
 
-    return _session;
-}
-
--- (NSURLSessionTask *)performRequest:(SKRequest *)soapRequest onSuccess:(void (^)(SKService *soapService, SKData *data))success onFailure:(void (^)(SKService *soapService, NSError *error))failure {
-    +- (NSOperationQueue *)backgroundQueue {
-        +    if (!_backgroundQueue) {
-            +        _backgroundQueue = [[NSOperationQueue alloc] init];
-            +        _backgroundQueue.maxConcurrentOperationCount = 4;
-            +    }
-        +    return _backgroundQueue;
-        +}
-    +
-    +- (NSURLSessionTask *)performRequest:(SKRequest *)soapRequest
-    +                           onSuccess:(void (^)(SKService *soapService, SKData *data))success
-    +                           onFailure:(void (^)(SKService *soapService, NSError *error))failure {
+    - (NSOperationQueue *)backgroundQueue {
+        if (!_backgroundQueue) {
+            _backgroundQueue = [[NSOperationQueue alloc] init];
+            _backgroundQueue.maxConcurrentOperationCount = 4;
+        }
+        return _backgroundQueue;
+    }
+    
+    - (NSURLSessionTask *)performRequest:(SKRequest *)soapRequest
+                               onSuccess:(void (^)(SKService *soapService, SKData *data))success
+                               onFailure:(void (^)(SKService *soapService, NSError *error))failure {
         soapRequest.username = self.username;
         soapRequest.password = self.password;
 
