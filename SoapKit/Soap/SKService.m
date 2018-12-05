@@ -65,8 +65,9 @@
             } else {
                 if (result.count > 1) {
                     success(self, [SKData dataWithName:[NSString stringWithFormat:@"%@Response", soapRequest.operation] andChildren:result]);
+                } else {
+                    success(self, result.firstObject );
                 }
-                success(self, result.firstObject );
             }
         }];
         [task resume];
